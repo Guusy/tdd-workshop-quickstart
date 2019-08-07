@@ -1,7 +1,7 @@
 import React from 'react';
 
 const DatePicker = (props) => {
-  const { weeks, onDateClicked } = props;
+  const { weeks, onDateClicked, selectedDate } = props;
   return (
     <table>
       <tbody>
@@ -9,7 +9,18 @@ const DatePicker = (props) => {
           {week.map(
             (date) => {
               const { day, month, year } = date
-              return (<td id={`date-${day}-${month}-${year}`} onClick={() => onDateClicked(date)}>{day}</td>)
+              let classNameDate = ""
+              if (selectedDate && selectedDate.day === day
+                && selectedDate.month === month
+                && selectedDate.year === year
+              ) {
+                classNameDate = "date--selected"
+              }
+              return (
+                <td id={`date-${day}-${month}-${year}`}
+                  onClick={() => onDateClicked(date)}
+                  className={classNameDate}
+                >{day}</td>)
             })
           }
         </tr>)}

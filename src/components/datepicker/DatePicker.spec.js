@@ -1,8 +1,17 @@
 import React from 'react';
 import DatePicker from './DatePicker';
 import { shallow } from 'enzyme';
+import { create } from 'domain';
+const createDate = (day, month, year) => ({ day, month, year })
 
-const props = { weeks: [] };
+const aDate = createDate(20, 2, 2021)
+const anotherDate = createDate(26, 2, 2021)
+const weeksValue = [
+  [aDate],
+  [anotherDate]
+]
+
+const props = { weeks: weeksValue };
 const setup = (anotherProps = {}) => {
   const newProps = {
     ...props,
@@ -14,10 +23,11 @@ const setup = (anotherProps = {}) => {
     wrapper,
     instance: wrapper.instance(),
     weeks: wrapper.find('.date-picker__week'),
-    getDate: (date) => wrapper.find(`#date-${date.day}-${date.month}-${date.year}`)
+    getDate: (date) => wrapper.find(`#date-${date.day}-${date.month}-${date.year}`),
+    selectedDateElement: wrapper.find('.date--selected'),
+    applyButton: wrapper.find('.apply-button')
   };
 };
-const createDate = (day, month, year) => ({ day, month, year })
 describe('DatePicker', () => {
   const { wrapper } = setup();
   it('smoke test', () => {
@@ -25,30 +35,57 @@ describe('DatePicker', () => {
   });
   describe('basic render', () => {
     describe('when pass weeks', () => {
-      const firstDate = createDate(20, 2, 2021)
-      const secondDate = createDate(26, 2, 2021)
-      const weeksValue = [
-        [firstDate],
-        [secondDate]
-      ]
-      const onDateClickedSpy = jest.fn()
-      const { weeks, getDate } = setup({ weeks: weeksValue, onDateClicked: onDateClickedSpy })
+      const { weeks, getDate, applyButton } = setup()
       it('renders it', () => {
         expect(weeks).toHaveLength(2)
       });
       it('render the dates', () => {
-        expect(getDate(firstDate).text()).toEqual(firstDate.day.toString())
-        expect(getDate(secondDate).text()).toEqual(secondDate.day.toString())
+        expect(getDate(aDate).text()).toEqual(aDate.day.toString())
+        expect(getDate(anotherDate).text()).toEqual(anotherDate.day.toString())
       })
-      describe('when click a date', () => {
-        beforeAll(() => {
-          const dateToClick = getDate(firstDate)
-          dateToClick.simulate('click')
-        })
-        it('call onDateClickedProp with the date', () => {
-          expect(onDateClickedSpy).toBeCalledWith(firstDate)
-        })
+      it('render apply button', () => {
+        expect(applyButton).toHaveLength(1)
       })
+
     })
   })
+
+  describe('when click a date', () => {
+    const onDateClickedSpy = jest.fn()
+    const { getDate } = setup({ onDateClicked: onDateClickedSpy })
+    beforeAll(() => {
+      const dateToClick = getDate(aDate)
+      dateToClick.simulate('click')
+    })
+    it('call onDateClickedProp with the date', () => {
+      expect(onDateClickedSpy).toBeCalledWith(aDate)
+    })
+  })
+
+  describe('when pass a selectedDate', () => {
+    const selectedDate = createDate(20, 4, 2021)
+
+    describe('and this day existing in the calendar', () => {
+      const { selectedDateElement } = setup({
+        weeks: [[selectedDate]],
+        selectedDate
+      })
+
+      it('mark as selected', () => {
+        expect(selectedDateElement.text()).toEqual(selectedDate.day.toString())
+      })
+    })
+
+    describe('and this day doesnt existing in the calendar', () => {
+      const { selectedDateElement } = setup({
+        weeks: [[createDate(19, 3, 2090)]],
+        selectedDate
+      })
+
+      it('doenst mark as selected', () => {
+        expect(selectedDateElement).toHaveLength(0)
+      })
+    })
+
+  });
 })
