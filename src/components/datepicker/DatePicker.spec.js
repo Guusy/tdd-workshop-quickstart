@@ -47,6 +47,10 @@ describe('DatePicker', () => {
         expect(applyButton).toHaveLength(1)
       })
 
+      it('render apply with "Aplicar" label', () => {
+        expect(applyButton.text()).toEqual('Aplicar')
+      })
+
     })
   })
 
@@ -88,4 +92,18 @@ describe('DatePicker', () => {
     })
 
   });
+
+  describe('when click on apply button', () => {
+    const onApplySpy = jest.fn();
+    const { applyButton } = setup({ onApply: onApplySpy })
+
+    beforeAll(() => {
+      applyButton.simulate('click')
+    })
+
+    it('call onApply prop', () => {
+      expect(onApplySpy).toBeCalled();
+    })
+  })
+
 })
