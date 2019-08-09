@@ -9,16 +9,24 @@ const setup = (anotherProps = {}) => {
         ...anotherProps,
     };
     const wrapper = shallow(<Calendar {...newProps} />);
-
     return {
         wrapper,
-        instance: wrapper.instance(),
+        datePicker: wrapper.find('DatePicker')
     };
 };
 
+const createDate = (day, month, year) => ({ day, month, year })
+
 describe('Calendar', () => {
-    const { wrapper } = setup();
-    it('smoke test', () => {
-        expect(wrapper.exists()).toBe(true);
-    });
+    describe('when select a date', () => {
+        const { wrapper, datePicker } = setup();
+        const selectedDate = createDate(20, 8, 2019)
+        beforeAll(() => {
+            datePicker.props().onDateClicked(selectedDate);
+        })
+        it('pass this selected date to the datePicker', () => {
+            const datePickerWithSelectedDate = wrapper.find('DatePicker')
+            expect(datePickerWithSelectedDate.props().selectedDate).toEqual(selectedDate)
+        })
+    })
 })
