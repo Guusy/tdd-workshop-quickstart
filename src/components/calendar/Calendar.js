@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import DatePicker from '../datepicker/DatePicker'
+import { julMonthWeeks2018 } from './data'
+
 const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [appliedDate, setAppliedDate] = useState("")
@@ -10,18 +12,15 @@ const Calendar = () => {
     setAppliedDate(`${selectedDate.day}/${selectedDate.month}/${selectedDate.year}`)
   }
   return (
-    <div>
+    <div className="calendar">
       <DatePicker
-        weeks={[[{ day: 20, month: 2, year: 2018 }], [
-          { day: 28, month: 2, year: 2018 }
-        ]]}
+        weeks={julMonthWeeks2018}
         onDateClicked={onDateClicked}
         selectedDate={selectedDate}
         onApply={onApply}
       />
       <div >
-        El dia seleccionado es :
-        <span className="applied-date">
+        El dia seleccionado es : <span className="applied-date">
           {appliedDate}
         </span>
       </div>
